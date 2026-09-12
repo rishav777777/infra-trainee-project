@@ -1,0 +1,3 @@
+# Assignment Context & Architecture Summary
+
+The infrastructure is built on a hardened Ubuntu host utilizing UFW and key-based SSH, directly fulfilling the system provisioning and security requirements. To satisfy the containerization and web service criteria, a Docker Compose stack deploys a Python backend behind an Nginx reverse proxy, coupled with a PostgreSQL database secured by a persistent volume to prevent data loss. Finally, automated bash scripts scheduled via cron jobs handle routine health checks and database backups, seamlessly meeting the automation, monitoring, and disaster recovery objectives.

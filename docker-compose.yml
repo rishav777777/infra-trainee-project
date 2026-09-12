@@ -29,6 +29,11 @@ services:
       - db
     networks:
       - app-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
 
   db:
     image: postgres:16-alpine
@@ -42,6 +47,11 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - app-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
 
   node_exporter:
     image: prom/node-exporter:v1.8.0
@@ -70,3 +80,4 @@ volumes:
 networks:
   app-network:
     driver: bridge
+

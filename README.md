@@ -2,6 +2,11 @@
 
 This repository contains the configuration, automation, and orchestration files for a highly available, monitored web application stack.
 
+## Architecture Decisions
+* **Nginx Reverse Proxy:** Selected for its low memory footprint and high concurrency when routing traffic to the backend.
+* **Data Persistence:** A named Docker volume (`pgdata`) is attached to PostgreSQL to guarantee data survives container restarts and upgrades.
+* **Automated Log Rotation:** The database backup script includes a 7-day retention policy to prevent the Ubuntu host from running out of disk space over time.
+
 ## Architecture Overview
 * **OS:** Ubuntu Server (Hardened, Key-based SSH on Port 2222, UFW enabled)
 * **Reverse Proxy:** Nginx (Host Port 80)

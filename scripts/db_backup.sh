@@ -1,25 +1,34 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
+# Enable strict error handling
+set -e
+set -u
 
+# Configuration Variables
 BACKUP_DIR="/var/backups/db"
 TIMESTAMP=$(date "+%Y%m%d")
 BACKUP_FILE="${BACKUP_DIR}/db_backup_${TIMESTAMP}.sql.gz"
-CONTAINER_NAME="postgres_db"
-DB_USER="trainee"
-DB_NAME="traineedb"
+# Change 'postgres_db' to match your actual database container name from docker ps
+CONTAINER_NAME="postgres_db" 
+DB_USER="postgres"
 
-echo "[INFO] Starting database backup for '${DB_NAME}'..."
-
+# 1. Ensure backup directory exists
 mkdir -p "$BACKUP_DIR"
 
-# Execute pg_dump inside container, stream output, and gzip compress
-docker exec "$CONTAINER_NAME" pg_dump -U "$DB_USER" "$DB_NAME" | gzip > "$BACKUP_FILE"
+# 2. Execute database dump and compress
+echo "Starting database backup..."
+docker exec "$CONTAINER_NAME" pg_dump -U "$DB_USER" postgres | gzip > "$BACKUP_FILE"
 
-if [ -s "$BACKUP_FILE" ]; then
-    FILESIZE=$(du -h "$BACKUP_FILE" | awk '{print $1}')
-    echo "[SUCCESS] Backup completed: ${BACKUP_FILE} (${FILESIZE})"
+# 3. Verify backup success
+if [ -f "$BACKUP_FILE" ]; then
+    echo "Backup completed successfully: $BACKUP_FILE"
 else
-    echo "[ERROR] Backup failed or generated an empty file." >&2
+    echo "Error: Backup file was not created!"
     exit 1
 fi
+
+# 4. Cleanup old backups (Retention: 7 days)
+echo "Cleaning up backups older than 7 days to preserve disk space..."
+find "$BACKUP_DIR" -type f -name '*.sql.gz' -mtime +7 -exec rm {} \;
+
+echo "Backup process finished."

@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
 
+# Enable strict error handling (Code Quality Upgrade)
+set -e
+set -u
+
 LOG_FILE="/var/log/infra_health.log"
 TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
 APP_CONTAINER="web_app"
 DISK_THRESHOLD=85
+
+# Ensure log file exists
+touch "$LOG_FILE"
 
 # 1. Resource Metrics Collection
 # CPU: Calculate usage by subtracting idle percentage from 100
@@ -59,4 +66,3 @@ if [ "$WARNING_TRIGGERED" -eq 0 ]; then
     echo "[OK] All system health checks within nominal thresholds."
     echo "[$TIMESTAMP] [INFO] System healthy. CPU:${CPU_USAGE}% RAM:${RAM_USAGE}% DISK:${DISK_USAGE}%" >> "$LOG_FILE"
 fi
-

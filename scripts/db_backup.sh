@@ -8,9 +8,11 @@ set -u
 BACKUP_DIR="/var/backups/db"
 TIMESTAMP=$(date "+%Y%m%d")
 BACKUP_FILE="${BACKUP_DIR}/db_backup_${TIMESTAMP}.sql.gz"
-# Change 'postgres_db' to match your actual database container name from docker ps
 CONTAINER_NAME="postgres_db" 
 DB_USER="postgres"
+
+# Trap errors and log exactly which line failed
+trap 'echo "[$TIMESTAMP] [FATAL ERROR] Backup script failed at line $LINENO" >> /var/log/infra_health.log' ERR
 
 # 1. Ensure backup directory exists
 mkdir -p "$BACKUP_DIR"
